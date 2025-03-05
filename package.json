@@ -1,0 +1,27 @@
+{
+  "name": "financeai",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KauaCruzPereira/FinanceAi_BackEnd.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KauaCruzPereira/FinanceAi_BackEnd/issues"
+  },
+  "homepage": "https://github.com/KauaCruzPereira/FinanceAi_BackEnd#readme",
+  "description": "",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "node-localstorage": "^3.0.5"
+  }
+}
