@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "tsx watch index.ts"
   },
   "repository": {
     "type": "git",
@@ -23,5 +23,11 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "node-localstorage": "^3.0.5"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.9",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
   }
 }
