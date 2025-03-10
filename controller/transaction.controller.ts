@@ -1,7 +1,6 @@
 import { Request } from "express";
 import { Response } from "express";
 import { LocalStorage } from "node-localstorage";
-import { title } from "process";
 const localStorage = new LocalStorage("./scratch");
 
 type CreateAndUpdateTransactionBodyParams = {
@@ -28,11 +27,11 @@ export function transactionController() {
     }
 
     const value = JSON.parse(localStorage.getItem("key")) || [];
-    let arraySize = value.length
-    const item =  value[arraySize - 1]
-    let nextIndex = 1
+    let arraySize = value.length;
+    const item = value[arraySize - 1];
+    let nextIndex = 1;
     if (item) {
-      nextIndex = item.id + 1
+      nextIndex = item.id + 1;
     }
     let data = {
       id: nextIndex,
@@ -98,7 +97,7 @@ export function transactionController() {
       localStorage.setItem("key", JSON.stringify(value));
       return res.status(204).json();
     }
-    return res.status(404).json({message:"Transação não encontrada"}) 
+    return res.status(404).json({ message: "Transação não encontrada" });
   }
 
   return {
