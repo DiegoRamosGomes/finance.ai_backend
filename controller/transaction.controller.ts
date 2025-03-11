@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { Response } from "express";
+  import { Response } from "express";
 import { LocalStorage } from "node-localstorage";
 const localStorage = new LocalStorage("./scratch");
 
@@ -7,6 +7,7 @@ type CreateAndUpdateTransactionBodyParams = {
   title: string;
   value: string;
   transactionType: number;
+  date: Date;
 };
 
 type RemoveTransactionBodyParams = {
@@ -24,9 +25,11 @@ export function transactionController() {
       return res.status(400).json({ message: "Valor obrigatório" });
     } else if (!req.body.transactionType) {
       return res.status(400).json({ message: "Tipo de Transação obrigatório" });
+    } else if (!req.body.date) {
+      return res.status(400).json({ message: "Data obrigatória" });
     }
 
-    const value = JSON.parse(localStorage.getItem("key")) || [];
+    const value = JSON.parse(localStorage.getItem("key") || "") || [];
     let arraySize = value.length;
     const item = value[arraySize - 1];
     let nextIndex = 1;
@@ -38,6 +41,7 @@ export function transactionController() {
       title: req.body.title,
       value: req.body.value,
       transactionType: req.body.transactionType,
+      date: req.body.date
     };
 
     value.push(data);
@@ -46,7 +50,7 @@ export function transactionController() {
   }
 
   function read(req: Request<{}, {}>, res: Response) {
-    const value = JSON.parse(localStorage.getItem("key")) || [];
+    const value = JSON.parse(localStorage.getItem("key") || "" ) || [];
     return res.json(value);
   }
 
@@ -58,7 +62,7 @@ export function transactionController() {
     >,
     res: Response
   ) {
-    const value = JSON.parse(localStorage.getItem("key")) || [];
+    const value = JSON.parse(localStorage.getItem("key") || "" ) || [];
     let index = value.findIndex(function (param: any) {
       return param.id == req.params.id;
     });
@@ -73,7 +77,7 @@ export function transactionController() {
     >,
     res: Response
   ) {
-    const value = JSON.parse(localStorage.getItem("key")) || [];
+    const value = JSON.parse(localStorage.getItem("key") || "" ) || [];
     let index = value.findIndex(function (param: any) {
       return param.id == req.params.id;
     });
@@ -82,13 +86,15 @@ export function transactionController() {
       title: req.body.title,
       value: req.body.value,
       transactionType: req.body.transactionType,
+      date: req.body.date
     };
+    
     localStorage.setItem("key", JSON.stringify(value));
     return res.json(value[index]);
   }
 
   function remove(req: Request<RemoveTransactionBodyParams>, res: Response) {
-    const value = JSON.parse(localStorage.getItem("key")) || [];
+    const value = JSON.parse(localStorage.getItem("key") || "" ) || [];
     let index = value.findIndex(function (param: any) {
       return param.id == req.params.id;
     });
