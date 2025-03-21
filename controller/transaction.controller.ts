@@ -20,9 +20,8 @@ function create(
 ) {
   const { title, value, transactionType, date } = req.body;
   if (!title || !value || transactionType === undefined || !date) {
-    return res
-      .status(400)
-      .json({ message: "Todos os campos são obrigatórios" });
+    res.status(400).json({ message: "Todos os campos são obrigatórios" });
+    return
   }
 
   const transactions = JSON.parse(localStorage.getItem("key") || "[]");
@@ -33,12 +32,14 @@ function create(
   transactions.push(newTransaction);
   localStorage.setItem("key", JSON.stringify(transactions));
 
-  return res.status(201).json(newTransaction);
+  res.status(201).json(newTransaction);
+  return;
 }
 
 function read(req: Request, res: Response) {
   const transactions = JSON.parse(localStorage.getItem("key") || "[]");
-  return res.json(transactions);
+   res.json(transactions);
+   return
 }
 
 function readOnlyOne(req: Request<RemoveTransactionParams>, res: Response) {
@@ -48,9 +49,11 @@ function readOnlyOne(req: Request<RemoveTransactionParams>, res: Response) {
   );
 
   if (!transaction) {
-    return res.status(404).json({ message: "Transação não encontrada" });
+    res.status(404).json({ message: "Transação não encontrada" });
+    return;
   }
-  return res.json(transaction);
+  res.json(transaction);
+  return;
 }
 
 function update(
@@ -67,12 +70,14 @@ function update(
   );
 
   if (index === -1) {
-    return res.status(404).json({ message: "Transação não encontrada" });
+    res.status(404).json({ message: "Transação não encontrada" });
+    return;
   }
 
   transactions[index] = { id: transactions[index].id, ...req.body };
   localStorage.setItem("key", JSON.stringify(transactions));
-  return res.json(transactions[index]);
+  res.json(transactions[index]);
+  return;
 }
 
 function remove(req: Request<RemoveTransactionParams>, res: Response) {
@@ -82,35 +87,17 @@ function remove(req: Request<RemoveTransactionParams>, res: Response) {
   );
 
   if (index === -1) {
-    return res.status(404).json({ message: "Transação não encontrada" });
+    res.status(404).json({ message: "Transação não encontrada" });
+    return;
   }
 
   transactions.splice(index, 1);
   localStorage.setItem("key", JSON.stringify(transactions));
-  return res.status(204).send();
+   res.status(204).send();
+   return
 }
 
-const test = (req: Request<RemoveTransactionParams>, res: Response) => {
-  const { title, value, transactionType, date } = req.body;
-  if (!title || !value || transactionType === undefined || !date) {
-    return res
-      .status(400)
-      .json({ message: "Todos os campos são obrigatórios" });
-  }
-
-  const transactions = JSON.parse(localStorage.getItem("key") || "[]");
-  const nextId =
-    transactions.length > 0 ? transactions[transactions.length - 1].id + 1 : 1;
-
-  const newTransaction = { id: nextId, title, value, transactionType, date };
-  transactions.push(newTransaction);
-  localStorage.setItem("key", JSON.stringify(transactions));
-
-  return res.status(200)
-};
-
 export default {
-  test,
   create,
   read,
   readOnlyOne,
