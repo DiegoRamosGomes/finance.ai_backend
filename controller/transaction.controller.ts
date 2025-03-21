@@ -1,116 +1,119 @@
-import { Request } from "express";
-  import { Response } from "express";
+import { Request, Response } from "express";
 import { LocalStorage } from "node-localstorage";
+
 const localStorage = new LocalStorage("./scratch");
 
 type CreateAndUpdateTransactionBodyParams = {
   title: string;
   value: string;
   transactionType: number;
-  date: Date;
+  date: string;
 };
 
-type RemoveTransactionBodyParams = {
-  id: number;
+type RemoveTransactionParams = {
+  id: string;
 };
 
-export function transactionController() {
-  function create(
-    req: Request<{}, {}, CreateAndUpdateTransactionBodyParams>,
-    res: Response
-  ) {
-    if (!req.body.title) {
-      return res.status(400).json({ message: "Título obrigatório" });
-    } else if (!req.body.value) {
-      return res.status(400).json({ message: "Valor obrigatório" });
-    } else if (!req.body.transactionType) {
-      return res.status(400).json({ message: "Tipo de Transação obrigatório" });
-    } else if (!req.body.date) {
-      return res.status(400).json({ message: "Data obrigatória" });
-    }
-
-    const value = JSON.parse(localStorage.getItem("key") || "") || [];
-    let arraySize = value.length;
-    const item = value[arraySize - 1];
-    let nextIndex = 1;
-    if (item) {
-      nextIndex = item.id + 1;
-    }
-    let data = {
-      id: nextIndex,
-      title: req.body.title,
-      value: req.body.value,
-      transactionType: req.body.transactionType,
-      date: req.body.date
-    };
-
-    value.push(data);
-    localStorage.setItem("key", JSON.stringify(value));
-    return res.status(201).json(data);
+function create(
+  req: Request<{}, {}, CreateAndUpdateTransactionBodyParams>,
+  res: Response
+) {
+  const { title, value, transactionType, date } = req.body;
+  if (!title || !value || transactionType === undefined || !date) {
+    return res
+      .status(400)
+      .json({ message: "Todos os campos são obrigatórios" });
   }
 
-  function read(req: Request<{}, {}>, res: Response) {
-    const value = JSON.parse(localStorage.getItem("key") || "" ) || [];
-    return res.json(value);
-  }
+  const transactions = JSON.parse(localStorage.getItem("key") || "[]");
+  const nextId =
+    transactions.length > 0 ? transactions[transactions.length - 1].id + 1 : 1;
 
-  function readOnlyOne(
-    req: Request<
-      RemoveTransactionBodyParams,
-      {},
-      CreateAndUpdateTransactionBodyParams
-    >,
-    res: Response
-  ) {
-    const value = JSON.parse(localStorage.getItem("key") || "" ) || [];
-    let index = value.findIndex(function (param: any) {
-      return param.id == req.params.id;
-    });
+  const newTransaction = { id: nextId, title, value, transactionType, date };
+  transactions.push(newTransaction);
+  localStorage.setItem("key", JSON.stringify(transactions));
 
-    return res.json(value[index]);
-  }
-  function update(
-    req: Request<
-      RemoveTransactionBodyParams,
-      {},
-      CreateAndUpdateTransactionBodyParams
-    >,
-    res: Response
-  ) {
-    const value = JSON.parse(localStorage.getItem("key") || "" ) || [];
-    let index = value.findIndex(function (param: any) {
-      return param.id == req.params.id;
-    });
-    value[index] = {
-      id: value[index].id,
-      title: req.body.title,
-      value: req.body.value,
-      transactionType: req.body.transactionType,
-      date: req.body.date
-    };
-    
-    localStorage.setItem("key", JSON.stringify(value));
-    return res.json(value[index]);
-  }
+  return res.status(201).json(newTransaction);
+}
 
-  function remove(req: Request<RemoveTransactionBodyParams>, res: Response) {
-    const value = JSON.parse(localStorage.getItem("key") || "" ) || [];
-    let index = value.findIndex(function (param: any) {
-      return param.id == req.params.id;
-    });
-    if (index > -1) {
-      value.splice(index, 1);
-      localStorage.setItem("key", JSON.stringify(value));
-      return res.status(204).json();
-    }
+function read(req: Request, res: Response) {
+  const transactions = JSON.parse(localStorage.getItem("key") || "[]");
+  return res.json(transactions);
+}
+
+function readOnlyOne(req: Request<RemoveTransactionParams>, res: Response) {
+  const transactions = JSON.parse(localStorage.getItem("key") || "[]");
+  const transaction = transactions.find(
+    (t: any) => t.id === Number(req.params.id)
+  );
+
+  if (!transaction) {
+    return res.status(404).json({ message: "Transação não encontrada" });
+  }
+  return res.json(transaction);
+}
+
+function update(
+  req: Request<
+    RemoveTransactionParams,
+    {},
+    CreateAndUpdateTransactionBodyParams
+  >,
+  res: Response
+) {
+  const transactions = JSON.parse(localStorage.getItem("key") || "[]");
+  const index = transactions.findIndex(
+    (t: any) => t.id === Number(req.params.id)
+  );
+
+  if (index === -1) {
     return res.status(404).json({ message: "Transação não encontrada" });
   }
 
-  return {
-    create,
-    read,
-    update,
-    remove,
-    readOnlyOne,
-  };
+  transactions[index] = { id: transactions[index].id, ...req.body };
+  localStorage.setItem("key", JSON.stringify(transactions));
+  return res.json(transactions[index]);
 }
+
+function remove(req: Request<RemoveTransactionParams>, res: Response) {
+  const transactions = JSON.parse(localStorage.getItem("key") || "[]");
+  const index = transactions.findIndex(
+    (t: any) => t.id === Number(req.params.id)
+  );
+
+  if (index === -1) {
+    return res.status(404).json({ message: "Transação não encontrada" });
+  }
+
+  transactions.splice(index, 1);
+  localStorage.setItem("key", JSON.stringify(transactions));
+  return res.status(204).send();
+}
+
+const test = (req: Request<RemoveTransactionParams>, res: Response) => {
+  const { title, value, transactionType, date } = req.body;
+  if (!title || !value || transactionType === undefined || !date) {
+    return res
+      .status(400)
+      .json({ message: "Todos os campos são obrigatórios" });
+  }
+
+  const transactions = JSON.parse(localStorage.getItem("key") || "[]");
+  const nextId =
+    transactions.length > 0 ? transactions[transactions.length - 1].id + 1 : 1;
+
+  const newTransaction = { id: nextId, title, value, transactionType, date };
+  transactions.push(newTransaction);
+  localStorage.setItem("key", JSON.stringify(transactions));
+
+  return res.status(200)
+};
+
+export default {
+  test,
+  create,
+  read,
+  readOnlyOne,
+  update,
+  remove,
+};
