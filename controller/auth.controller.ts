@@ -1,5 +1,6 @@
 import { LocalStorage } from "node-localstorage";
 import { Request, Response } from "express";
+import { query } from "../services/database.js";
 
 const localStorage = new LocalStorage("./scratch");
 
@@ -28,16 +29,13 @@ function register(req: Request, res: Response) {
   return;
 }
 
-function login(req: Request, res: Response) {
+async function login(req: Request, res: Response) {
   const { password, email } = req.body;
-  const users = JSON.parse(localStorage.getItem("users") || "[]");
-  const user = users.find(
-    (item) => item.email === email && item.password === password
-  );
-
-  if (user) {
-    delete user.password;
-    res.json(user);
+  const sql = `SELECT id, name, email FROM users WHERE email = $1 AND password = $2;`
+  const users = await query(sql, [email, password])
+  
+  if (users.length) {
+    res.json(users[0]);
     return;
   }
   res.status(404).json({ message: "Credenciais inválidas" });
