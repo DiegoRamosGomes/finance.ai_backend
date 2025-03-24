@@ -4,36 +4,31 @@ import { query } from "../services/database";
 
 const localStorage = new LocalStorage("./scratch");
 
-function register(req: Request, res: Response) {
+async function register(req: Request, res: Response) {
   const { name, password, email } = req.body;
-
-  const users = JSON.parse(localStorage.getItem("users") || "[]");
-  const nextId = users.length > 0 ? users[users.length - 1].id + 1 : 1;
-  const newUser = { id: nextId, name, password, email };
 
   if (!name || !password || !email) {
     res.status(400).json({ message: "Preencha todos os campos" });
     return;
   }
 
-  const user = users.findIndex((item) => item.email === email);
-  if (user > -1) {
-    res.status(409).json({ message: "Email já cadastrado" });
+  const sql =
+    "INSERT INTO users (name, email, password) VALUES($1, $2, $3) returning id, name, email";
+  try {
+    const users = await query(sql, [name, email, password]);
+    res.status(201).json(users[0]);
+    return;
+  } catch (e) {
+    res.status(400).json({ message: "Usuário já está cadastrado" });
     return;
   }
-
-  users.push(newUser);
-  localStorage.setItem("users", JSON.stringify(users));
-  delete newUser.password;
-  res.status(201).json(newUser);
-  return;
 }
 
 async function login(req: Request, res: Response) {
   const { password, email } = req.body;
-  const sql = `SELECT id, name, email FROM users WHERE email = $1 AND password = $2;`
-  const users = await query(sql, [email, password])
-  
+  const sql = `SELECT id, name, email FROM users WHERE email = $1 AND password = $2;`;
+  const users = await query(sql, [email, password]);
+
   if (users.length) {
     res.json(users[0]);
     return;
