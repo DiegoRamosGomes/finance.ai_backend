@@ -4,6 +4,7 @@ import  bodyParser  from 'body-parser'
 import transactionController from './controller/transaction.controller'
 import authController from './controller/auth.controller'
 import dotenv from 'dotenv'
+import { authMiddleware } from './middlewares/auth.middleware'
 
 dotenv.config()
 
@@ -27,7 +28,7 @@ app.delete('/transaction/:id', transactionController.remove)
 
 app.post('/auth/register', authController.register) 
 app.post('/auth/login', authController.login) 
-app.get('/auth/me', authController.getMe) 
+app.get('/auth/me', authMiddleware, authController.getMe) 
 app.put('/auth/me', authController.updateMe) 
 
 app.listen(port, () => {
