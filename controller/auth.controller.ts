@@ -1,6 +1,6 @@
 import { LocalStorage } from "node-localstorage";
 import { Request, Response } from "express";
-import { query } from "../services/database.js";
+import { query } from "../services/database";
 
 const localStorage = new LocalStorage("./scratch");
 

@@ -1,8 +1,8 @@
 import  express, {Express} from 'express'
 import cors  from 'cors'
 import  bodyParser  from 'body-parser'
-import transactionController from './controller/transaction.controller.js'
-import authController from './controller/auth.controller.js'
+import transactionController from './controller/transaction.controller'
+import authController from './controller/auth.controller'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -13,6 +13,12 @@ const port = process.env.PORT
 app.use(cors());
 app.use(bodyParser.json());
 
+app.get('/', (_, res) => {
+  res.json({
+    ok: true
+  })
+  return 
+})
 app.post('/transaction', transactionController.create) 
 app.get('/transaction', transactionController.read) 
 app.get('/transaction/:id', transactionController.readOnlyOne) 
