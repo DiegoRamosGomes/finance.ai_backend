@@ -1,6 +1,7 @@
 import { LocalStorage } from "node-localstorage";
 import { Request, Response } from "express";
 import { query } from "../services/database";
+import jwt from "jsonwebtoken"
 
 const localStorage = new LocalStorage("./scratch");
 
@@ -30,7 +31,12 @@ async function login(req: Request, res: Response) {
   const users = await query(sql, [email, password]);
 
   if (users.length) {
-    res.json(users[0]);
+    const token = jwt.sign({ id: users[0].id }, process.env.JWT_SECRET ?? "");
+    const response = {
+      token,
+      user: users[0]
+    }
+    res.json(response);
     return;
   }
   res.status(404).json({ message: "Credenciais inválidas" });

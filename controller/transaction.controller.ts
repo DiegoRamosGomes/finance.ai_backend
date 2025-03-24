@@ -21,7 +21,7 @@ function create(
   const { title, value, transactionType, date } = req.body;
   if (!title || !value || transactionType === undefined || !date) {
     res.status(400).json({ message: "Todos os campos são obrigatórios" });
-    return
+    return;
   }
 
   const transactions = JSON.parse(localStorage.getItem("key") || "[]");
@@ -38,8 +38,8 @@ function create(
 
 function read(req: Request, res: Response) {
   const transactions = JSON.parse(localStorage.getItem("key") || "[]");
-   res.json(transactions);
-   return
+  res.json(transactions);
+  return;
 }
 
 function readOnlyOne(req: Request<RemoveTransactionParams>, res: Response) {
@@ -93,8 +93,8 @@ function remove(req: Request<RemoveTransactionParams>, res: Response) {
 
   transactions.splice(index, 1);
   localStorage.setItem("key", JSON.stringify(transactions));
-   res.status(204).send();
-   return
+  res.status(204).send();
+  return;
 }
 
 export default {
