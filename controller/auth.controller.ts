@@ -1,16 +1,13 @@
-import { LocalStorage } from "node-localstorage";
 import { Request, Response } from "express";
 import { query } from "../services/database";
 import jwt from "jsonwebtoken";
 import { AuthenticatedRequest } from "../middlewares/auth.middleware";
 
-const localStorage = new LocalStorage("./scratch");
-
 async function register(req: Request, res: Response) {
   const { name, password, email } = req.body;
 
   if (!name || !password || !email) {
-    res.status(400).json({ message: "Preencha todos os campos" });
+    res.status(400).json({ message: "Preencha todos os campos." });
     return;
   }
 
@@ -21,7 +18,7 @@ async function register(req: Request, res: Response) {
     res.status(201).json(users[0]);
     return;
   } catch (e) {
-    res.status(400).json({ message: "Usuário já está cadastrado" });
+    res.status(400).json({ message: "Usuário já está cadastrado." });
     return;
   }
 }
@@ -40,7 +37,7 @@ async function login(req: Request, res: Response) {
     res.json(response);
     return;
   }
-  res.status(404).json({ message: "Credenciais inválidas" });
+  res.status(404).json({ message: "Credenciais inválidas." });
   return;
 }
 
@@ -60,7 +57,7 @@ async function updateMe(req: AuthenticatedRequest, res: Response) {
   const { name, password, email } = req.body;
 
   if (!name || !password || !email){
-    res.status(400).json({ message: "Preencha todos os campos" })
+    res.status(400).json({ message: "Preencha todos os campos." })
     return
   }
   const sql = `UPDATE users SET email = $1, name = $2, password = $3 WHERE id = $4 returning id, name, email`
@@ -69,7 +66,7 @@ async function updateMe(req: AuthenticatedRequest, res: Response) {
     res.status(201).json(users[0]);
     return
   } catch {
-    res.status(400).json({message: "O email já está em uso"})
+    res.status(400).json({message: "O email já está em uso."})
   }
  
  

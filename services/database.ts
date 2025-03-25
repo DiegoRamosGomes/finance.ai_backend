@@ -15,6 +15,7 @@ export const query = async (sql: string, values: string[]) => {
     client.release()
     return result.rows
   } catch(e) {
+    console.log(e)
     client.release()
     throw new Error("Ocorreu algum erro na execução da query, verifique a sintaxe")
   }

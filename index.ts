@@ -20,11 +20,11 @@ app.get('/', (_, res) => {
   })
   return 
 })
-app.post('/transaction', transactionController.create) 
-app.get('/transaction', transactionController.read) 
-app.get('/transaction/:id', transactionController.readOnlyOne) 
-app.put('/transaction/:id', transactionController.update) 
-app.delete('/transaction/:id', transactionController.remove)
+app.post('/transaction', authMiddleware, transactionController.create) 
+app.get('/transaction', authMiddleware, transactionController.read) 
+app.get('/transaction/:id', authMiddleware, transactionController.readOnlyOne) 
+app.put('/transaction/:id', authMiddleware, transactionController.update) 
+app.delete('/transaction/:id', authMiddleware, transactionController.remove)
 
 app.post('/auth/register', authController.register) 
 app.post('/auth/login', authController.login) 

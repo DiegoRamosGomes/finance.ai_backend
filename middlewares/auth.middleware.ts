@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
+import * as core from "express-serve-static-core";
 import { JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
 
-export interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest<P = core.ParamsDictionary, ResBody = any, ReqBody = any, ReqQuery = qs.ParsedQs, Locals extends Record<string, any> = Record<string, any>> extends Request<P, ResBody, ReqBody, ReqQuery, Locals> {
   user?: string | JwtPayload; // Ou outro tipo que represente o payload do JWT
 }
 
