@@ -29,7 +29,7 @@ app.delete('/transaction/:id', transactionController.remove)
 app.post('/auth/register', authController.register) 
 app.post('/auth/login', authController.login) 
 app.get('/auth/me', authMiddleware, authController.getMe) 
-app.put('/auth/me', authController.updateMe) 
+app.put('/auth/me', authMiddleware, authController.updateMe) 
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

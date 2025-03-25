@@ -56,7 +56,24 @@ async function getMe(req: AuthenticatedRequest, res: Response) {
   return;
 }
 
-function updateMe(req: Request, res: Response) {}
+async function updateMe(req: AuthenticatedRequest, res: Response) {
+  const { name, password, email } = req.body;
+
+  if (!name || !password || !email){
+    res.status(400).json({ message: "Preencha todos os campos" })
+    return
+  }
+  const sql = `UPDATE users SET email = $1, name = $2, password = $3 WHERE id = $4 returning id, name, email`
+  try{
+    const users = await query(sql, [email, name, password, req.user?.toString() ?? '']);
+    res.status(201).json(users[0]);
+    return
+  } catch {
+    res.status(400).json({message: "O email já está em uso"})
+  }
+ 
+ 
+}
 
 export default {
   register,
