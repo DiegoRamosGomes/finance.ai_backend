@@ -13,6 +13,7 @@ const port = process.env.PORT
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json())
 
 app.get('/', (_, res) => {
   res.json({
